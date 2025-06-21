@@ -1,4 +1,5 @@
 import { users, requests, type User, type InsertUser, type Request, type InsertRequest } from "@shared/schema";
+import { ESTIMATION_QUESTIONS } from "@shared/questions";
 import { db } from "./db";
 import { eq, desc, asc } from "drizzle-orm";
 
@@ -44,9 +45,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createRequest(insertRequest: InsertRequest): Promise<Request> {
-    // Calculate score and derived fields
-    const score = insertRequest.technicalComplexity + insertRequest.businessImpact + 
-                  insertRequest.resourceRequirements + insertRequest.riskLevel;
+    // Calculate score from answers
+    const score = this.calculateScoreFromAnswers(insertRequest.answers);
     
     let complexity: string;
     let estimatedTime: string;
@@ -79,8 +79,23 @@ export class DatabaseStorage implements IStorage {
     return request;
   }
 
+  private calculateScoreFromAnswers(answers: string[]): number {
+    let totalScore = 0;
+    
+    ESTIMATION_QUESTIONS.forEach((question, index) => {
+      const selectedAnswer = answers[index];
+      if (selectedAnswer) {
+        const option = question.options.find(opt => opt.text === selectedAnswer);
+        if (option) {
+          totalScore += option.score;
+        }
+      }
+    });
+    
+    return totalScore;
+  }
+
   async updateRequest(id: number, updateData: Partial<InsertRequest>): Promise<Request> {
-    // If any scoring factors are updated, recalculate score
     const currentRequest = await this.getRequest(id);
     if (!currentRequest) {
       throw new Error('Request not found');
@@ -88,14 +103,9 @@ export class DatabaseStorage implements IStorage {
 
     let updatedRequest = { ...currentRequest, ...updateData };
 
-    // Recalculate score if any scoring factors changed
-    if (updateData.technicalComplexity !== undefined || 
-        updateData.businessImpact !== undefined ||
-        updateData.resourceRequirements !== undefined ||
-        updateData.riskLevel !== undefined) {
-      
-      const score = updatedRequest.technicalComplexity + updatedRequest.businessImpact + 
-                    updatedRequest.resourceRequirements + updatedRequest.riskLevel;
+    // Recalculate score if answers changed
+    if (updateData.answers !== undefined) {
+      const score = this.calculateScoreFromAnswers(updateData.answers);
       
       let complexity: string;
       let estimatedTime: string;

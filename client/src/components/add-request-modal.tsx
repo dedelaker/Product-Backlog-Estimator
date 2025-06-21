@@ -5,12 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { insertRequestSchema, type InsertRequest } from "@shared/schema";
+import { ESTIMATION_QUESTIONS } from "@shared/questions";
 import { getScoreColorClasses } from "@/lib/utils";
 
 interface AddRequestModalProps {
@@ -27,11 +27,7 @@ export default function AddRequestModal({ isOpen, onClose }: AddRequestModalProp
     resolver: zodResolver(insertRequestSchema),
     defaultValues: {
       title: "",
-      description: "",
-      technicalComplexity: 0,
-      businessImpact: 0,
-      resourceRequirements: 0,
-      riskLevel: 0,
+      answers: ESTIMATION_QUESTIONS.map(() => ""),
     },
   });
 
@@ -59,15 +55,27 @@ export default function AddRequestModal({ isOpen, onClose }: AddRequestModalProp
   const watchedValues = form.watch();
 
   useEffect(() => {
-    const score = (watchedValues.technicalComplexity || 0) + 
-                  (watchedValues.businessImpact || 0) + 
-                  (watchedValues.resourceRequirements || 0) + 
-                  (watchedValues.riskLevel || 0);
-    setCalculatedScore(score);
+    const answers = watchedValues.answers || [];
+    let totalScore = 0;
+    
+    ESTIMATION_QUESTIONS.forEach((question, index) => {
+      const selectedAnswer = answers[index];
+      if (selectedAnswer) {
+        const option = question.options.find(opt => opt.text === selectedAnswer);
+        if (option) {
+          totalScore += option.score;
+        }
+      }
+    });
+    
+    setCalculatedScore(totalScore);
   }, [watchedValues]);
 
   const handleClose = () => {
-    form.reset();
+    form.reset({
+      title: "",
+      answers: ESTIMATION_QUESTIONS.map(() => ""),
+    });
     setCalculatedScore(0);
     onClose();
   };
@@ -116,130 +124,35 @@ export default function AddRequestModal({ isOpen, onClose }: AddRequestModalProp
               )}
             />
 
-            {/* Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Describe the request details..." 
-                      rows={3}
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Scoring Factors */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Technical Complexity */}
-              <FormField
-                control={form.control}
-                name="technicalComplexity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Technical Complexity *</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select complexity" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="10">Very Low (10)</SelectItem>
-                        <SelectItem value="25">Low (25)</SelectItem>
-                        <SelectItem value="50">Medium (50)</SelectItem>
-                        <SelectItem value="100">High (100)</SelectItem>
-                        <SelectItem value="200">Very High (200)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Business Impact */}
-              <FormField
-                control={form.control}
-                name="businessImpact"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Business Impact *</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select impact" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="5">Very Low (5)</SelectItem>
-                        <SelectItem value="15">Low (15)</SelectItem>
-                        <SelectItem value="30">Medium (30)</SelectItem>
-                        <SelectItem value="50">High (50)</SelectItem>
-                        <SelectItem value="100">Very High (100)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Resource Requirements */}
-              <FormField
-                control={form.control}
-                name="resourceRequirements"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Resource Requirements *</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select requirements" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="5">Minimal (5)</SelectItem>
-                        <SelectItem value="20">Low (20)</SelectItem>
-                        <SelectItem value="40">Medium (40)</SelectItem>
-                        <SelectItem value="80">High (80)</SelectItem>
-                        <SelectItem value="150">Very High (150)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Risk Level */}
-              <FormField
-                control={form.control}
-                name="riskLevel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Risk Level *</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select risk level" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="5">Very Low (5)</SelectItem>
-                        <SelectItem value="15">Low (15)</SelectItem>
-                        <SelectItem value="30">Medium (30)</SelectItem>
-                        <SelectItem value="60">High (60)</SelectItem>
-                        <SelectItem value="100">Very High (100)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* Questions */}
+            <div className="space-y-6">
+              {ESTIMATION_QUESTIONS.map((question, index) => (
+                <FormField
+                  key={question.id}
+                  control={form.control}
+                  name={`answers.${index}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{question.text} *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an answer" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {question.options.map((option) => (
+                            <SelectItem key={option.text} value={option.text}>
+                              {option.text} ({option.score} points)
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
             </div>
 
             {/* Calculated Score Display */}
@@ -256,7 +169,7 @@ export default function AddRequestModal({ isOpen, onClose }: AddRequestModalProp
                 )}
               </div>
               <div className="text-sm text-gray-600 mt-2">
-                {calculatedScore > 0 ? `Estimated timeline: ${getTimeEstimate(calculatedScore)}` : 'Select all factors to see estimated timeline'}
+                {calculatedScore > 0 ? `Estimated timeline: ${getTimeEstimate(calculatedScore)}` : 'Answer all questions to see estimated timeline'}
               </div>
             </div>
 

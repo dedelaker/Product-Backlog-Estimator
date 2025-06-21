@@ -11,11 +11,7 @@ export const users = pgTable("users", {
 export const requests = pgTable("backlog_requests", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  description: text("description"),
-  technicalComplexity: integer("technical_complexity").notNull(),
-  businessImpact: integer("business_impact").notNull(),
-  resourceRequirements: integer("resource_requirements").notNull(),
-  riskLevel: integer("risk_level").notNull(),
+  answers: text("answers").array().notNull(), // Store selected answers as array
   score: integer("score").notNull(),
   complexity: text("complexity").notNull(),
   estimatedTime: text("estimated_time").notNull(),
