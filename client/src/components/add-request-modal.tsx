@@ -111,7 +111,6 @@ export default function AddRequestModal({ isOpen, onClose }: AddRequestModalProp
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Request Title Section */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-4">Request Information</h3>
               <FormField
                 control={form.control}
                 name="title"
