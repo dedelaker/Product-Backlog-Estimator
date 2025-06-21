@@ -141,11 +141,19 @@ export default function EditRequestModal({ isOpen, onClose, request }: EditReque
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {question.options.map((option) => (
-                            <SelectItem key={option.text} value={option.text}>
-                              {option.text} ({option.score} points)
-                            </SelectItem>
-                          ))}
+                          {question.options.map((option) => {
+                            const { scoreColorClass, scoreBgClass } = getScoreColorClasses(option.score);
+                            return (
+                              <SelectItem key={option.text} value={option.text}>
+                                <div className="flex justify-between items-center w-full">
+                                  <span className="flex-1">{option.text}</span>
+                                  <div className={`ml-4 px-2 py-1 rounded text-xs font-medium ${scoreBgClass} ${scoreColorClass}`}>
+                                    {option.score}
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       <FormMessage />
