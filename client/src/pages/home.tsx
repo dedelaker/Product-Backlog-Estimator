@@ -44,9 +44,7 @@ export default function Home() {
   });
 
   const handleDeleteRequest = (id: number) => {
-    if (confirm("Are you sure you want to delete this request?")) {
-      deleteRequestMutation.mutate(id);
-    }
+    deleteRequestMutation.mutate(id);
   };
 
   const handleEditRequest = (request: Request) => {
