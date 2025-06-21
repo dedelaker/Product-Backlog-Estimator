@@ -109,58 +109,64 @@ export default function EditRequestModal({ isOpen, onClose, request }: EditReque
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Request Title */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Request Title *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter request title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Request Title Section */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-blue-900 mb-4">Request Information</h3>
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Request Title *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter request title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            {/* Questions */}
-            <div className="space-y-6">
-              {ESTIMATION_QUESTIONS.map((question, index) => (
-                <FormField
-                  key={question.id}
-                  control={form.control}
-                  name={`answers.${index}`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{question.text} *</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an answer" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {question.options.map((option) => {
-                            const { scoreColorClass, scoreBgClass } = getScoreColorClasses(option.score);
-                            return (
-                              <SelectItem key={option.text} value={option.text}>
-                                <div className="flex justify-between items-center w-full">
-                                  <span className="flex-1">{option.text}</span>
-                                  <div className={`ml-4 px-2 py-1 rounded text-xs font-medium ${scoreBgClass} ${scoreColorClass}`}>
-                                    {option.score}
+            {/* Questions Section */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Estimation Questions</h3>
+              <div className="space-y-6">
+                {ESTIMATION_QUESTIONS.map((question, index) => (
+                  <FormField
+                    key={question.id}
+                    control={form.control}
+                    name={`answers.${index}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{question.text} *</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select an answer" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {question.options.map((option) => {
+                              const { scoreColorClass, scoreBgClass } = getScoreColorClasses(option.score);
+                              return (
+                                <SelectItem key={option.text} value={option.text}>
+                                  <div className="flex justify-between items-center w-full">
+                                    <span className="flex-1">{option.text}</span>
+                                    <div className={`ml-4 px-2 py-1 rounded text-xs font-medium ${scoreBgClass} ${scoreColorClass}`}>
+                                      {option.score}
+                                    </div>
                                   </div>
-                                </div>
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Calculated Score Display */}
