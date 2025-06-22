@@ -21,13 +21,7 @@
       ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "https://estimator.yourdomain.com",
-      "permanent": true
-    }
-  ],
+
   "rewrites": [
     {
       "source": "/api/(.*)",
