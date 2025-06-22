@@ -2,6 +2,13 @@
   "buildCommand": "npx vite build",
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "https://estimator.yourdomain.com",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
