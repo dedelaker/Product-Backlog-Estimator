@@ -161,6 +161,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add /api/index route for Vercel compatibility
+  app.get("/api/index", async (req, res) => {
+    try {
+      const requests = await storage.getAllRequests();
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+      res.status(500).json({ message: "Failed to fetch requests" });
+    }
+  });
+
+  app.post("/api/index", async (req, res) => {
+    try {
+      const validatedData = insertRequestSchema.parse(req.body);
+      const request = await storage.createRequest(validatedData);
+      res.status(201).json(request);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      console.error("Error creating request:", error);
+      res.status(500).json({ message: "Failed to create request" });
+    }
+  });
+
+  app.put("/api/index", async (req, res) => {
+    try {
+      const id = parseInt(req.query.id as string);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid request ID" });
+      }
+
+      const validatedData = insertRequestSchema.parse(req.body);
+      const request = await storage.updateRequest(id, validatedData);
+      res.json(request);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      console.error("Error updating request:", error);
+      res.status(500).json({ message: "Failed to update request" });
+    }
+  });
+
+  app.delete("/api/index", async (req, res) => {
+    try {
+      const id = parseInt(req.query.id as string);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid request ID" });
+      }
+
+      await storage.deleteRequest(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting request:", error);
+      res.status(500).json({ message: "Failed to delete request" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

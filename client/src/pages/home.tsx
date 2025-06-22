@@ -20,15 +20,15 @@ export default function Home() {
   const queryClient = useQueryClient();
 
   const { data: requests = [], isLoading } = useQuery<Request[]>({
-    queryKey: ["/api/hello"],
+    queryKey: ["/api/index"],
   });
 
   const deleteRequestMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/hello?id=${id}`);
+      await apiRequest("DELETE", `/api/index?id=${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/hello"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/index"] });
       toast({
         title: "Success",
         description: "Request deleted successfully",

@@ -33,10 +33,10 @@ export default function AddRequestModal({ isOpen, onClose }: AddRequestModalProp
 
   const createRequestMutation = useMutation({
     mutationFn: async (data: InsertRequest) => {
-      await apiRequest("POST", "/api/hello", data);
+      await apiRequest("POST", "/api/index", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/hello"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/index"] });
       toast({
         title: "Success",
         description: "Request created successfully",

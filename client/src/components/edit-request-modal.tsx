@@ -34,10 +34,10 @@ export default function EditRequestModal({ isOpen, onClose, request }: EditReque
 
   const updateRequestMutation = useMutation({
     mutationFn: async (data: InsertRequest) => {
-      await apiRequest("PUT", `/api/hello?id=${request.id}`, data);
+      await apiRequest("PUT", `/api/index?id=${request.id}`, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/hello"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/index"] });
       toast({
         title: "Success",
         description: "Request updated successfully",
