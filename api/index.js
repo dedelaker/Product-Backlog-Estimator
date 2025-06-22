@@ -3,18 +3,15 @@ const { drizzle } = require('drizzle-orm/neon-serverless');
 const { eq } = require('drizzle-orm');
 const { pgTable, serial, text, timestamp, integer } = require('drizzle-orm/pg-core');
 
-// Handle WebSocket constructor for serverless environment
-if (typeof WebSocket !== 'undefined') {
-  neonConfig.webSocketConstructor = WebSocket;
+// Configure WebSocket for Vercel serverless environment
+if (typeof globalThis !== 'undefined' && globalThis.WebSocket) {
+  neonConfig.webSocketConstructor = globalThis.WebSocket;
 } else if (typeof global !== 'undefined' && global.WebSocket) {
   neonConfig.webSocketConstructor = global.WebSocket;
 } else {
-  try {
-    const ws = require('ws');
-    neonConfig.webSocketConstructor = ws;
-  } catch (e) {
-    // WebSocket will be handled by Neon in serverless environment
-  }
+  // For Vercel Edge Runtime, disable WebSocket and use HTTP-only connection
+  neonConfig.useSecureWebSocket = false;
+  neonConfig.pipelineConnect = false;
 }
 
 const requests = pgTable("backlog_requests", {
@@ -85,7 +82,9 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
+    console.log('Initializing database connection...');
     const database = initializeDB();
+    console.log('Database initialized successfully');
 
     if (req.method === 'GET') {
       const allRequests = await database.select().from(requests);
