@@ -1,0 +1,44 @@
+[19:18:15.608] Running build in Washington, D.C., USA (East) – iad1
+[19:18:15.609] Build machine configuration: 2 cores, 8 GB
+[19:18:15.680] Cloning github.com/dedelaker/product-backlog-estimator (Branch: main, Commit: 6ca2549)
+[19:18:15.693] Skipping build cache, deployment was triggered without cache.
+[19:18:16.213] Cloning completed: 531.000ms
+[19:18:16.895] Running "vercel build"
+[19:18:17.366] Vercel CLI 43.3.0
+[19:18:17.528] WARN! Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
+[19:18:17.916] Installing dependencies...
+[19:18:22.895] npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+[19:18:23.087] npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+[19:18:28.662] 
+[19:18:28.662] added 569 packages in 11s
+[19:18:28.663] 
+[19:18:28.663] 70 packages are looking for funding
+[19:18:28.663]   run `npm fund` for details
+[19:18:28.729] Running "npm run build"
+[19:18:28.843] 
+[19:18:28.843] > rest-express@1.0.0 build
+[19:18:28.844] > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+[19:18:28.844] 
+[19:18:29.124] [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+[19:18:29.194] transforming...
+[19:18:29.450] Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+[19:18:29.452]   npx update-browserslist-db@latest
+[19:18:29.452]   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[19:18:34.504] [32m✓[39m 1829 modules transformed.
+[19:18:34.857] rendering chunks...
+[19:18:34.865] computing gzip size...
+[19:18:35.412] [2m../dist/public/[22m[32mindex.html                 [39m[1m[2m  0.61 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
+[19:18:35.413] [2m../dist/public/[22m[2massets/[22m[35mindex-R89ucFvp.css  [39m[1m[2m 60.08 kB[22m[1m[22m[2m │ gzip:  10.64 kB[22m
+[19:18:35.413] [2m../dist/public/[22m[2massets/[22m[36mindex-DQwBagzx.js   [39m[1m[2m490.88 kB[22m[1m[22m[2m │ gzip: 150.75 kB[22m
+[19:18:35.416] [32m✓ built in 6.25s[39m
+[19:18:35.446] 
+[19:18:35.447]   dist/index.js  14.8kb
+[19:18:35.447] 
+[19:18:35.447] ⚡ Done in 5ms
+[19:18:35.525] Build Completed in /vercel/output [18s]
+[19:18:35.553] Deploying outputs...
+[19:18:36.693] 
+[19:18:36.826] Deployment completed
+[19:18:52.188] Uploading build cache [105.53 MB]...
+[19:18:54.073] Build cache uploaded: 1.886s
+[19:18:56.321] Exiting build container
