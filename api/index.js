@@ -1,7 +1,7 @@
 const { Pool, neonConfig } = require('@neondatabase/serverless');
 const { drizzle } = require('drizzle-orm/neon-serverless');
 const { eq } = require('drizzle-orm');
-const { pgTable, serial, text, timestamp } = require('drizzle-orm/pg-core');
+const { pgTable, serial, text, timestamp, integer } = require('drizzle-orm/pg-core');
 
 // Handle WebSocket constructor for serverless environment
 if (typeof WebSocket !== 'undefined') {
@@ -21,7 +21,7 @@ const requests = pgTable("backlog_requests", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   answers: text("answers").array().notNull(),
-  score: serial("score").notNull(),
+  score: integer("score").notNull(),
   complexity: text("complexity").notNull(),
   estimatedTime: text("estimated_time").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
