@@ -53,29 +53,37 @@ const ESTIMATION_QUESTIONS = [
     ]
   },
   {
-    id: "swe_dependencies",
-    text: "Do we have very high dependencies with SWE 1 or SWE 9?",
+    id: "legal_compliance",
+    text: "Legal or compliance requirements?",
     options: [
       { text: "No", score: 0 },
-      { text: "Yes, high impact on multiple teams", score: 300 },
-      { text: "Yes, high impact on one team or medium impact on multiple teams", score: 150 },
-      { text: "Yes, but small impacts", score: 50 }
+      { text: "Yes, but simple", score: 75 },
+      { text: "Yes, complex", score: 100 }
     ]
   },
   {
-    id: "fraud_compliance",
-    text: "Do we have impacts on Fraud/Compliance workflows",
+    id: "impact_scope",
+    text: "Impact scope assessment",
     options: [
-      { text: "No", score: 0 },
-      { text: "Yes", score: 30 }
+      { text: "Small", score: 30 },
+      { text: "Medium", score: 50 },
+      { text: "Large", score: 100 }
     ]
   },
   {
-    id: "it_dependencies",
-    text: "Do we have IT dependencies about new hardware to order",
+    id: "data_security",
+    text: "Do we have to manage sensitive data?",
     options: [
       { text: "No", score: 0 },
       { text: "Yes", score: 50 }
+    ]
+  },
+  {
+    id: "design_knowledge",
+    text: "Do we have good knowledge about the design?",
+    options: [
+      { text: "Yes, we already have UX, Design system, Flow", score: 30 },
+      { text: "No, everything to do", score: 100 }
     ]
   },
   {
