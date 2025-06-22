@@ -5,12 +5,16 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist/public"
+        "distDir": "dist/public",
+        "nodeVersion": "20.x"
       }
     },
     {
       "src": "server/index.ts",
-      "use": "@vercel/node@3.1.5"
+      "use": "@vercel/node@3.1.5",
+      "config": {
+        "nodeVersion": "20.x"
+      }
     }
   ],
   "routes": [
