@@ -52,17 +52,17 @@ export class DatabaseStorage implements IStorage {
     let estimatedTime: string;
 
     if (score >= 500) {
-      complexity = 'Very High Complexity';
-      estimatedTime = 'More than 6 months';
+      complexity = 'Very high complexity or effort';
+      estimatedTime = 'More than 6 months for construction phase with max capacity';
     } else if (score >= 200) {
-      complexity = 'High Complexity';
-      estimatedTime = '3-6 months';
+      complexity = 'High complexity or effort';
+      estimatedTime = 'Between 3 & 6 months for construction phase with max capacity';
     } else if (score >= 100) {
-      complexity = 'Medium Complexity';
-      estimatedTime = '1-3 months';
+      complexity = 'Medium complexity or effort';
+      estimatedTime = 'Between 1 & 3 months for construction phase with max capacity';
     } else {
-      complexity = 'Low Complexity';
-      estimatedTime = '~1 month';
+      complexity = 'No complexity and low effort';
+      estimatedTime = '~1 month for construction phase with max capacity';
     }
 
     const requestWithScore = {
@@ -111,17 +111,17 @@ export class DatabaseStorage implements IStorage {
       let estimatedTime: string;
 
       if (score >= 500) {
-        complexity = 'Very High Complexity';
-        estimatedTime = 'More than 6 months';
+        complexity = 'Very high complexity or effort';
+        estimatedTime = 'More than 6 months for construction phase with max capacity';
       } else if (score >= 200) {
-        complexity = 'High Complexity';
-        estimatedTime = '3-6 months';
+        complexity = 'High complexity or effort';
+        estimatedTime = 'Between 3 & 6 months for construction phase with max capacity';
       } else if (score >= 100) {
-        complexity = 'Medium Complexity';
-        estimatedTime = '1-3 months';
+        complexity = 'Medium complexity or effort';
+        estimatedTime = 'Between 1 & 3 months for construction phase with max capacity';
       } else {
-        complexity = 'Low Complexity';
-        estimatedTime = '~1 month';
+        complexity = 'No complexity and low effort';
+        estimatedTime = '~1 month for construction phase with max capacity';
       }
 
       updatedRequest.score = score;

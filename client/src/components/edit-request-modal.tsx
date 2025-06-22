@@ -87,17 +87,17 @@ export default function EditRequestModal({ isOpen, onClose, request }: EditReque
   const { scoreColorClass, scoreBgClass, complexityBadgeClass } = getScoreColorClasses(calculatedScore);
 
   const getComplexityText = (score: number) => {
-    if (score >= 500) return 'Very High Complexity';
-    if (score >= 200) return 'High Complexity';
-    if (score >= 100) return 'Medium Complexity';
-    return 'Low Complexity';
+    if (score >= 500) return 'Very high complexity or effort';
+    if (score >= 200) return 'High complexity or effort';
+    if (score >= 100) return 'Medium complexity or effort';
+    return 'No complexity and low effort';
   };
 
   const getTimeEstimate = (score: number) => {
-    if (score >= 500) return 'More than 6 months';
-    if (score >= 200) return '3-6 months';
-    if (score >= 100) return '1-3 months';
-    return '~1 month';
+    if (score >= 500) return 'More than 6 months for construction phase with max capacity';
+    if (score >= 200) return 'Between 3 & 6 months for construction phase with max capacity';
+    if (score >= 100) return 'Between 1 & 3 months for construction phase with max capacity';
+    return '~1 month for construction phase with max capacity';
   };
 
   return (
