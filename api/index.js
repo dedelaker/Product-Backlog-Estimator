@@ -53,32 +53,31 @@ const ESTIMATION_QUESTIONS = [
     ]
   },
   {
-    id: "legal_compliance",
-    text: "Legal or compliance requirements?",
+    id: "swe_dependencies",
+    text: "Do we have very high dependencies with SWE I or SWE P?",
     options: [
       { text: "No", score: 0 },
-      { text: "Yes, but simple", score: 75 },
-      { text: "Yes, complex", score: 100 }
+      { text: "Yes, high impact on multiple teams", score: 300 },
+      { text: "Yes, high impact on one team or medium impact on multiple teams", score: 150 },
+      { text: "Yes, but small impacts", score: 50 }
     ]
   },
   {
-    id: "impact_scope",
-    text: "Impact scope assessment",
+    id: "fraud_compliance",
+    text: "Do we have impacts on Fraud/Compliance workflows",
     options: [
-      { text: "Small", score: 30 },
-      { text: "Medium", score: 50 },
-      { text: "Large", score: 100 }
+      { text: "No", score: 0 },
+      { text: "Yes", score: 20 }
     ]
   },
   {
-    id: "data_security",
-    text: "Do we have to manage sensitive data?",
+    id: "it_dependencies",
+    text: "Do we have IT dependencies about new hardware to order",
     options: [
       { text: "No", score: 0 },
       { text: "Yes", score: 50 }
     ]
   },
-
   {
     id: "security_analysis",
     text: "Do we have complex analysis of IT security? or Legal? (ex: for big impacts / critical outsourcing, AI guidelines)",
@@ -101,7 +100,7 @@ const ESTIMATION_QUESTIONS = [
     text: "Do we have to put in place a new architecture?",
     options: [
       { text: "No, only upgrade on current one", score: 0 },
-      { text: "Yes, but a new small piece", score: 30 },
+      { text: "Yes, but a new small piece", score: 20 },
       { text: "Yes, and big impact on current one", score: 100 }
     ]
   }

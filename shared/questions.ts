@@ -63,7 +63,7 @@ export const ESTIMATION_QUESTIONS: Question[] = [
     text: "Do we have impacts on Fraud/Compliance workflows",
     options: [
       { text: "No", score: 0 },
-      { text: "Yes", score: 30 }
+      { text: "Yes", score: 20 }
     ]
   },
   {
@@ -96,7 +96,7 @@ export const ESTIMATION_QUESTIONS: Question[] = [
     text: "Do we have to put in place a new architecture?",
     options: [
       { text: "No, only upgrade on current one", score: 0 },
-      { text: "Yes, but a new small piece", score: 30 },
+      { text: "Yes, but a new small piece", score: 20 },
       { text: "Yes, and big impact on current one", score: 100 }
     ]
   }
