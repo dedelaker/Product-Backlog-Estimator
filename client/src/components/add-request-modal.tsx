@@ -81,6 +81,9 @@ export default function AddRequestModal({ isOpen, onClose }: AddRequestModalProp
   };
 
   const onSubmit = (data: InsertRequest) => {
+    console.log('Frontend calculated score:', calculatedScore);
+    console.log('Data being sent to backend:', data);
+    console.log('Answers array:', data.answers);
     createRequestMutation.mutate(data);
   };
 
