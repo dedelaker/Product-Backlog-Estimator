@@ -3,11 +3,18 @@ const { drizzle } = require('drizzle-orm/neon-serverless');
 const { eq } = require('drizzle-orm');
 const { pgTable, serial, text, timestamp } = require('drizzle-orm/pg-core');
 
+// Handle WebSocket constructor for serverless environment
 if (typeof WebSocket !== 'undefined') {
   neonConfig.webSocketConstructor = WebSocket;
+} else if (typeof global !== 'undefined' && global.WebSocket) {
+  neonConfig.webSocketConstructor = global.WebSocket;
 } else {
-  const ws = require('ws');
-  neonConfig.webSocketConstructor = ws;
+  try {
+    const ws = require('ws');
+    neonConfig.webSocketConstructor = ws;
+  } catch (e) {
+    // WebSocket will be handled by Neon in serverless environment
+  }
 }
 
 const requests = pgTable("backlog_requests", {
