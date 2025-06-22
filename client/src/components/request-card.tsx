@@ -45,7 +45,7 @@ export default function RequestCard({ request, onEdit, onDelete }: RequestCardPr
         </div>
       </div>
       
-      <p className="text-gray-600 text-sm mb-4">{request.description || "No description provided"}</p>
+
       
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
