@@ -71,83 +71,36 @@ const ESTIMATION_QUESTIONS = [
     ]
   },
   {
-    id: "technical_integration",
-    text: "Technical integration complexity",
+    id: "data_security",
+    text: "Do we have to manage sensitive data?",
     options: [
-      { text: "Simple API integration (well-documented)", score: 10 },
-      { text: "Simple table updates or new fields", score: 15 },
-      { text: "New components using design system", score: 25 },
-      { text: "Custom components or complex UI", score: 40 }
+      { text: "No", score: 0 },
+      { text: "Yes", score: 50 }
     ]
   },
   {
-    id: "business_logic",
-    text: "Business logic complexity",
+    id: "design_knowledge",
+    text: "Do we have good knowledge about the design?",
     options: [
-      { text: "Simple CRUD operations", score: 5 },
-      { text: "Moderate logic with validations", score: 20 },
-      { text: "Complex calculations or workflows", score: 45 },
-      { text: "Advanced algorithms or processing", score: 80 }
+      { text: "Yes, we already have UX, Design system, Flow", score: 30 },
+      { text: "No, everything to do", score: 100 }
     ]
   },
   {
-    id: "testing_requirements",
-    text: "Testing requirements",
+    id: "new_technology",
+    text: "Do we have to use a new technology?",
     options: [
-      { text: "Basic manual testing", score: 5 },
-      { text: "Unit tests for key functions", score: 15 },
-      { text: "Integration and automated testing", score: 30 },
-      { text: "Comprehensive testing including load/security", score: 50 }
+      { text: "No", score: 0 },
+      { text: "Yes", score: 100 }
     ]
   },
   {
-    id: "dependencies",
-    text: "Dependencies and blockers",
+    id: "new_architecture",
+    text: "Do we have to put in place a new architecture?",
     options: [
-      { text: "No dependencies", score: 0 },
-      { text: "Depends on completed features", score: 10 },
-      { text: "Depends on work in progress", score: 30 },
-      { text: "Blocked by multiple incomplete dependencies", score: 60 }
-    ]
-  },
-  {
-    id: "requirements_clarity",
-    text: "Requirements clarity",
-    options: [
-      { text: "Clear requirements with detailed specs", score: 0 },
-      { text: "Good requirements, some clarification needed", score: 10 },
-      { text: "Basic requirements, significant research needed", score: 25 },
-      { text: "Vague requirements, extensive discovery required", score: 50 }
-    ]
-  },
-  {
-    id: "performance_requirements",
-    text: "Performance requirements",
-    options: [
-      { text: "No special performance requirements", score: 0 },
-      { text: "Standard performance expectations", score: 10 },
-      { text: "High performance requirements", score: 30 },
-      { text: "Critical performance with complex optimization", score: 60 }
-    ]
-  },
-  {
-    id: "security_requirements",
-    text: "Security requirements",
-    options: [
-      { text: "Standard security practices", score: 0 },
-      { text: "Additional security validation required", score: 15 },
-      { text: "Compliance requirements (GDPR, SOX, etc.)", score: 35 },
-      { text: "High-security features or audit requirements", score: 70 }
-    ]
-  },
-  {
-    id: "deployment_complexity",
-    text: "Deployment complexity",
-    options: [
-      { text: "Standard deployment process", score: 0 },
-      { text: "Requires configuration changes", score: 10 },
-      { text: "Phased rollout or feature flags needed", score: 25 },
-      { text: "Complex deployment with multiple environments", score: 45 }
+      { text: "No, only upgrade on current one", score: 0 },
+      { text: "Yes, but a new small piece", score: 30 },
+      { text: "Yes, and big impact on current one", score: 100 }
     ]
   }
 ];
