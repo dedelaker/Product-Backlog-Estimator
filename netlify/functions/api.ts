@@ -1,16 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { Handler } from '@netlify/functions';
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { eq } from 'drizzle-orm';
-import ws from 'ws';
-
-// Configure Neon
-neonConfig.webSocketConstructor = ws;
-
-// Database schema - inline to avoid import issues
 import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 
+// Configure Neon for serverless
+neonConfig.webSocketConstructor = globalThis.WebSocket || require('ws');
+
+// Database schema
 const requests = pgTable("backlog_requests", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -177,43 +175,44 @@ function getEstimatedTimeFromScore(score: number): string {
   return "More than 6 months";
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+export const handler: Handler = async (event, context) => {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json',
+  };
+
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
   }
 
-  const { route } = req.query;
-  const path = Array.isArray(route) ? route.join('/') : route || '';
+  const path = event.path.replace('/.netlify/functions/api', '').replace('/api', '') || '/';
+  const method = event.httpMethod;
 
   try {
     const database = initializeDB();
 
-    // GET /api/requests
-    if (req.method === 'GET' && path === 'requests') {
+    // GET /requests
+    if (method === 'GET' && path === '/requests') {
       const allRequests = await database.select().from(requests);
-      return res.status(200).json(allRequests);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(allRequests),
+      };
     }
 
-    // GET /api/requests/:id
-    if (req.method === 'GET' && path.startsWith('requests/')) {
-      const id = parseInt(path.split('/')[1]);
-      const [request] = await database.select().from(requests).where(eq(requests.id, id));
-      if (!request) {
-        return res.status(404).json({ error: 'Request not found' });
-      }
-      return res.status(200).json(request);
-    }
-
-    // POST /api/requests
-    if (req.method === 'POST' && path === 'requests') {
-      const { title, answers } = req.body;
+    // POST /requests
+    if (method === 'POST' && path === '/requests') {
+      const { title, answers } = JSON.parse(event.body || '{}');
       
       if (!title || !answers || !Array.isArray(answers)) {
-        return res.status(400).json({ error: 'Title and answers are required' });
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: 'Title and answers are required' }),
+        };
       }
 
       const score = calculateScoreFromAnswers(answers);
@@ -233,61 +232,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .values(requestData)
         .returning();
       
-      return res.status(201).json(newRequest);
-    }
-
-    // PUT /api/requests/:id
-    if (req.method === 'PUT' && path.startsWith('requests/')) {
-      const id = parseInt(path.split('/')[1]);
-      const { title, answers } = req.body;
-      
-      if (!title || !answers || !Array.isArray(answers)) {
-        return res.status(400).json({ error: 'Title and answers are required' });
-      }
-
-      const score = calculateScoreFromAnswers(answers);
-      const complexity = getComplexityFromScore(score);
-      const estimatedTime = getEstimatedTimeFromScore(score);
-      
-      const updateData = {
-        title,
-        answers,
-        score,
-        complexity,
-        estimatedTime
+      return {
+        statusCode: 201,
+        headers,
+        body: JSON.stringify(newRequest),
       };
-      
-      const [updatedRequest] = await database
-        .update(requests)
-        .set(updateData)
-        .where(eq(requests.id, id))
-        .returning();
-      
-      if (!updatedRequest) {
-        return res.status(404).json({ error: 'Request not found' });
-      }
-      
-      return res.status(200).json(updatedRequest);
     }
 
-    // DELETE /api/requests/:id
-    if (req.method === 'DELETE' && path.startsWith('requests/')) {
-      const id = parseInt(path.split('/')[1]);
+    // DELETE /requests/:id
+    if (method === 'DELETE' && path.startsWith('/requests/')) {
+      const id = parseInt(path.split('/')[2]);
       
       await database
         .delete(requests)
         .where(eq(requests.id, id));
       
-      return res.status(204).end();
+      return {
+        statusCode: 204,
+        headers,
+        body: '',
+      };
     }
 
-    return res.status(404).json({ error: 'Not found' });
+    return {
+      statusCode: 404,
+      headers,
+      body: JSON.stringify({ error: 'Not found' }),
+    };
     
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ 
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    });
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      }),
+    };
   }
-}
+};

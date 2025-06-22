@@ -1,16 +1,13 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { eq } from 'drizzle-orm';
-import ws from 'ws';
+const { Pool, neonConfig } = require('@neondatabase/serverless');
+const { drizzle } = require('drizzle-orm/neon-serverless');
+const { eq } = require('drizzle-orm');
+const { pgTable, serial, text, timestamp } = require('drizzle-orm/pg-core');
+const ws = require('ws');
 
 // Configure Neon
 neonConfig.webSocketConstructor = ws;
 
-// Database schema - inline to avoid import issues
-import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
-import { createInsertSchema } from 'drizzle-zod';
-
+// Database schema
 const requests = pgTable("backlog_requests", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -19,14 +16,6 @@ const requests = pgTable("backlog_requests", {
   complexity: text("complexity").notNull(),
   estimatedTime: text("estimated_time").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-});
-
-const insertRequestSchema = createInsertSchema(requests).omit({
-  id: true,
-  score: true,
-  complexity: true,
-  estimatedTime: true,
-  createdAt: true,
 });
 
 // Questions for scoring
@@ -133,7 +122,7 @@ const ESTIMATION_QUESTIONS = [
   }
 ];
 
-let db: any = null;
+let db = null;
 
 function initializeDB() {
   if (!db) {
@@ -146,7 +135,7 @@ function initializeDB() {
   return db;
 }
 
-function calculateScoreFromAnswers(answers: string[]): number {
+function calculateScoreFromAnswers(answers) {
   let totalScore = 0;
   
   ESTIMATION_QUESTIONS.forEach((question, index) => {
@@ -162,14 +151,14 @@ function calculateScoreFromAnswers(answers: string[]): number {
   return totalScore;
 }
 
-function getComplexityFromScore(score: number): string {
+function getComplexityFromScore(score) {
   if (score <= 100) return "Low Complexity";
   if (score <= 250) return "Medium Complexity";
   if (score <= 400) return "High Complexity";
   return "Very High Complexity";
 }
 
-function getEstimatedTimeFromScore(score: number): string {
+function getEstimatedTimeFromScore(score) {
   if (score <= 50) return "Less than 1 week";
   if (score <= 150) return "1-3 weeks";
   if (score <= 300) return "1-2 months";
@@ -177,7 +166,7 @@ function getEstimatedTimeFromScore(score: number): string {
   return "More than 6 months";
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -186,30 +175,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
-  const { route } = req.query;
-  const path = Array.isArray(route) ? route.join('/') : route || '';
-
   try {
     const database = initializeDB();
 
     // GET /api/requests
-    if (req.method === 'GET' && path === 'requests') {
+    if (req.method === 'GET') {
       const allRequests = await database.select().from(requests);
       return res.status(200).json(allRequests);
     }
 
-    // GET /api/requests/:id
-    if (req.method === 'GET' && path.startsWith('requests/')) {
-      const id = parseInt(path.split('/')[1]);
-      const [request] = await database.select().from(requests).where(eq(requests.id, id));
-      if (!request) {
-        return res.status(404).json({ error: 'Request not found' });
-      }
-      return res.status(200).json(request);
-    }
-
     // POST /api/requests
-    if (req.method === 'POST' && path === 'requests') {
+    if (req.method === 'POST') {
       const { title, answers } = req.body;
       
       if (!title || !answers || !Array.isArray(answers)) {
@@ -236,43 +212,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(201).json(newRequest);
     }
 
-    // PUT /api/requests/:id
-    if (req.method === 'PUT' && path.startsWith('requests/')) {
-      const id = parseInt(path.split('/')[1]);
-      const { title, answers } = req.body;
-      
-      if (!title || !answers || !Array.isArray(answers)) {
-        return res.status(400).json({ error: 'Title and answers are required' });
-      }
-
-      const score = calculateScoreFromAnswers(answers);
-      const complexity = getComplexityFromScore(score);
-      const estimatedTime = getEstimatedTimeFromScore(score);
-      
-      const updateData = {
-        title,
-        answers,
-        score,
-        complexity,
-        estimatedTime
-      };
-      
-      const [updatedRequest] = await database
-        .update(requests)
-        .set(updateData)
-        .where(eq(requests.id, id))
-        .returning();
-      
-      if (!updatedRequest) {
-        return res.status(404).json({ error: 'Request not found' });
-      }
-      
-      return res.status(200).json(updatedRequest);
-    }
-
     // DELETE /api/requests/:id
-    if (req.method === 'DELETE' && path.startsWith('requests/')) {
-      const id = parseInt(path.split('/')[1]);
+    if (req.method === 'DELETE') {
+      const id = parseInt(req.query.id || req.url.split('/').pop());
       
       await database
         .delete(requests)
@@ -290,4 +232,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       details: error instanceof Error ? error.message : 'Unknown error'
     });
   }
-}
+};

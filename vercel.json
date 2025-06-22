@@ -1,6 +1,29 @@
 {
-  "buildCommand": "vite build --outDir client/dist",
-  "outputDirectory": "client/dist",
-  "installCommand": "npm install",
-  "framework": null
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/public"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/requests",
+      "dest": "/api/requests.js"
+    },
+    {
+      "src": "/api/requests/(.*)",
+      "dest": "/api/requests.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/public/$1"
+    }
+  ]
 }
