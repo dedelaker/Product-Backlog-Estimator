@@ -78,14 +78,7 @@ const ESTIMATION_QUESTIONS = [
       { text: "Yes", score: 50 }
     ]
   },
-  {
-    id: "design_knowledge",
-    text: "Do we have good knowledge about the design?",
-    options: [
-      { text: "Yes, we already have UX, Design system, Flow", score: 30 },
-      { text: "No, everything to do", score: 100 }
-    ]
-  },
+
   {
     id: "security_analysis",
     text: "Do we have complex analysis of IT security? or Legal? (ex: for big impacts / critical outsourcing, AI guidelines)",
