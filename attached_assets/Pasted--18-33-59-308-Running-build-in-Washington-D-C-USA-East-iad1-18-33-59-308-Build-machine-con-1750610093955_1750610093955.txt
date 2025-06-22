@@ -1,0 +1,43 @@
+[18:33:59.308] Running build in Washington, D.C., USA (East) – iad1
+[18:33:59.308] Build machine configuration: 2 cores, 8 GB
+[18:33:59.323] Cloning github.com/dedelaker/product-backlog-estimator (Branch: main, Commit: 4827b82)
+[18:33:59.492] Previous build caches not available
+[18:33:59.630] Cloning completed: 307.000ms
+[18:34:00.116] Running "vercel build"
+[18:34:01.128] Vercel CLI 43.3.0
+[18:34:01.285] WARN! Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
+[18:34:01.813] > Installing Builder: @vercel/node@3.1.5
+[18:34:11.781] Installing dependencies...
+[18:34:17.052] npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+[18:34:17.090] npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+[18:34:22.353] 
+[18:34:22.354] added 569 packages in 11s
+[18:34:22.358] 
+[18:34:22.359] 70 packages are looking for funding
+[18:34:22.359]   run `npm fund` for details
+[18:34:22.391] Running "npm run build"
+[18:34:22.571] 
+[18:34:22.572] > rest-express@1.0.0 build
+[18:34:22.572] > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+[18:34:22.572] 
+[18:34:22.817] [36mvite v5.4.19 [32mbuilding for production...[36m[39m
+[18:34:22.863] transforming...
+[18:34:23.160] Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+[18:34:23.162]   npx update-browserslist-db@latest
+[18:34:23.162]   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[18:34:28.340] [32m✓[39m 1829 modules transformed.
+[18:34:28.727] rendering chunks...
+[18:34:28.739] computing gzip size...
+[18:34:28.792] [2m../dist/public/[22m[32mindex.html                 [39m[1m[2m  0.61 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
+[18:34:28.795] [2m../dist/public/[22m[2massets/[22m[35mindex-R89ucFvp.css  [39m[1m[2m 60.08 kB[22m[1m[22m[2m │ gzip:  10.64 kB[22m
+[18:34:28.795] [2m../dist/public/[22m[2massets/[22m[36mindex-DQwBagzx.js   [39m[1m[2m490.88 kB[22m[1m[22m[2m │ gzip: 150.75 kB[22m
+[18:34:28.795] [32m✓ built in 5.95s[39m
+[18:34:28.834] 
+[18:34:28.835]   dist/index.js  14.8kb
+[18:34:28.835] 
+[18:34:28.835] ⚡ Done in 5ms
+[18:34:29.088] Using TypeScript 5.6.3 (local user-provided)
+[18:34:34.279] server/vite.ts(39,5): error TS2322: Type '{ middlewareMode: boolean; hmr: { server: Server<typeof IncomingMessage, typeof ServerResponse>; }; allowedHosts: boolean; }' is not assignable to type 'ServerOptions'.
+[18:34:34.280]   Types of property 'allowedHosts' are incompatible.
+[18:34:34.280]     Type 'boolean' is not assignable to type 'true | string[] | undefined'.
+[18:34:34.280] 
