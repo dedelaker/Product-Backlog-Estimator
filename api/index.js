@@ -87,6 +87,15 @@ const ESTIMATION_QUESTIONS = [
     ]
   },
   {
+    id: "security_analysis",
+    text: "Do we have complex analysis of IT security? or Legal? (ex: for big impacts / critical outsourcing, AI guidelines)",
+    options: [
+      { text: "No", score: 0 },
+      { text: "Yes, with potential big impacts on solution", score: 150 },
+      { text: "Yes, but no impact on solution", score: 20 }
+    ]
+  },
+  {
     id: "new_technology",
     text: "Do we have to use a new technology?",
     options: [

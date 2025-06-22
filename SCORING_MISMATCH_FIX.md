@@ -1,26 +1,34 @@
-# Scoring Mismatch Fix - Question Structure Alignment
+# Scoring Mismatch Fix - Complete Question Structure Alignment
 
 ## Root Cause Identified
-- Frontend: 10 questions from shared/questions.ts
-- Backend API: 14 questions (mismatched structure)
-- Result: Frontend calculates score 200, backend stores score 100
+- Frontend: 11 questions from shared/questions.ts 
+- Backend API: 10 questions (missing security_analysis question)
+- Result: Frontend calculates score 525, backend stores score 375
 
-## Debug Evidence
+## Missing Question Analysis
+The backend was missing this critical question:
+```javascript
+{
+  id: "security_analysis",
+  text: "Do we have complex analysis of IT security? or Legal? (ex: for big impacts / critical outsourcing, AI guidelines)",
+  options: [
+    { text: "No", score: 0 },
+    { text: "Yes, with potential big impacts on solution", score: 150 },
+    { text: "Yes, but no impact on solution", score: 20 }
+  ]
+}
 ```
-Frontend calculated score: 200
-Data being sent to backend: {"title":"test44444","answers":["Yes, standard API, already used by lot of other clients","","","","","","","","","Yes, and big impact on current one"]}
-```
+
+## Score Impact
+- Missing question can contribute up to 150 points
+- This explains the 150-point gap (525 frontend - 375 backend = 150)
 
 ## Fix Applied
-- Updated api/index.js to use exact same 10 questions as frontend
-- Aligned question structure with shared/questions.ts
-- Maintained exact scoring values and complexity thresholds
+- Added missing security_analysis question to api/index.js
+- Now backend has complete 11-question structure matching frontend
+- All scoring values and complexity thresholds aligned
 
-## Deploy Commands
-```bash
-git add api/index.js
-git commit -m "Fix scoring mismatch by aligning backend questions with frontend"
-git push origin main
-```
-
-After deployment, frontend score calculations will match backend storage exactly.
+## Verification Required
+After deployment, test with same inputs:
+- Frontend preview: 525 points
+- Backend storage: should also be 525 points
