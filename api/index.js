@@ -1,18 +1,7 @@
-const { Pool, neonConfig } = require('@neondatabase/serverless');
-const { drizzle } = require('drizzle-orm/neon-serverless');
-const { eq } = require('drizzle-orm');
-const { pgTable, serial, text, timestamp, integer } = require('drizzle-orm/pg-core');
-
-// Configure WebSocket for Vercel serverless environment
-if (typeof globalThis !== 'undefined' && globalThis.WebSocket) {
-  neonConfig.webSocketConstructor = globalThis.WebSocket;
-} else if (typeof global !== 'undefined' && global.WebSocket) {
-  neonConfig.webSocketConstructor = global.WebSocket;
-} else {
-  // For Vercel Edge Runtime, disable WebSocket and use HTTP-only connection
-  neonConfig.useSecureWebSocket = false;
-  neonConfig.pipelineConnect = false;
-}
+import { Pool } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import { eq } from 'drizzle-orm';
+import { pgTable, serial, text, timestamp, integer } from 'drizzle-orm/pg-core';
 
 const requests = pgTable("backlog_requests", {
   id: serial("id").primaryKey(),
@@ -37,14 +26,9 @@ const ESTIMATION_QUESTIONS = [
   { options: [{ text: "Standard deployment process", score: 0 }, { text: "Requires configuration changes", score: 10 }, { text: "Phased rollout or feature flags needed", score: 25 }, { text: "Complex deployment with multiple environments", score: 45 }] }
 ];
 
-let db = null;
-
 function initializeDB() {
-  if (!db) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    db = drizzle({ client: pool });
-  }
-  return db;
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  return drizzle({ client: pool });
 }
 
 function calculateScoreFromAnswers(answers) {
@@ -74,17 +58,23 @@ function getEstimatedTimeFromScore(score) {
   return "More than 6 months";
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
+  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   try {
-    console.log('Initializing database connection...');
+    // Check if DATABASE_URL exists
+    if (!process.env.DATABASE_URL) {
+      return res.status(500).json({ error: 'DATABASE_URL not configured' });
+    }
+
     const database = initializeDB();
-    console.log('Database initialized successfully');
 
     if (req.method === 'GET') {
       const allRequests = await database.select().from(requests);
