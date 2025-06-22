@@ -29,6 +29,8 @@ export const insertRequestSchema = createInsertSchema(requests).omit({
   complexity: true,
   estimatedTime: true,
   createdAt: true,
+}).extend({
+  answers: z.array(z.string().min(1, "Please select an answer")).length(10, "All questions must be answered")
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
