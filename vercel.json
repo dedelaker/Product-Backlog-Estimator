@@ -1,5 +1,23 @@
 {
   "buildCommand": "npx vite build",
   "outputDirectory": "dist/public",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "postgresql://neondb_owner:npg_Q3pPgkjDE9SN@ep-delicate-resonance-a9911e52-pooler.gwc.azure.neon.tech/neondb?sslmode=require"
+  }
 }
