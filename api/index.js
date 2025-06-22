@@ -183,18 +183,17 @@ function calculateScoreFromAnswers(answers) {
 }
 
 function getComplexityFromScore(score) {
-  if (score <= 100) return "Low Complexity";
-  if (score <= 250) return "Medium Complexity";
-  if (score <= 400) return "High Complexity";
-  return "Very High Complexity";
+  if (score >= 500) return "Very High Complexity";
+  if (score >= 200) return "High Complexity";
+  if (score >= 100) return "Medium Complexity";
+  return "Low Complexity";
 }
 
 function getEstimatedTimeFromScore(score) {
-  if (score <= 50) return "Less than 1 week";
-  if (score <= 150) return "1-3 weeks";
-  if (score <= 300) return "1-2 months";
-  if (score <= 500) return "3-6 months";
-  return "More than 6 months";
+  if (score >= 500) return "More than 6 months";
+  if (score >= 200) return "3-6 months";
+  if (score >= 100) return "1-3 months";
+  return "Less than 1 month";
 }
 
 export default async function handler(req, res) {
