@@ -14,16 +14,142 @@ const requests = pgTable("backlog_requests", {
 });
 
 const ESTIMATION_QUESTIONS = [
-  { options: [{ text: "No external integrations needed", score: 0 }, { text: "Simple API integration (well-documented)", score: 20 }, { text: "Multiple APIs or complex integration", score: 50 }, { text: "Custom/legacy system integration", score: 80 }] },
-  { options: [{ text: "No database changes", score: 0 }, { text: "Simple table updates or new fields", score: 10 }, { text: "New tables or moderate schema changes", score: 30 }, { text: "Complex migrations or data restructuring", score: 60 }] },
-  { options: [{ text: "Minor UI updates or existing patterns", score: 5 }, { text: "New components using design system", score: 15 }, { text: "Custom UI components or layouts", score: 35 }, { text: "Complex interactive features or animations", score: 70 }] },
-  { options: [{ text: "Simple CRUD operations", score: 5 }, { text: "Moderate logic with validations", score: 20 }, { text: "Complex calculations or workflows", score: 45 }, { text: "Advanced algorithms or processing", score: 80 }] },
-  { options: [{ text: "Basic manual testing", score: 5 }, { text: "Unit tests for key functions", score: 15 }, { text: "Integration and automated testing", score: 30 }, { text: "Comprehensive testing including load/security", score: 50 }] },
-  { options: [{ text: "No dependencies", score: 0 }, { text: "Depends on completed features", score: 10 }, { text: "Depends on work in progress", score: 30 }, { text: "Blocked by multiple incomplete dependencies", score: 60 }] },
-  { options: [{ text: "Clear requirements with detailed specs", score: 0 }, { text: "Good requirements, some clarification needed", score: 10 }, { text: "Basic requirements, significant research needed", score: 25 }, { text: "Vague requirements, extensive discovery required", score: 50 }] },
-  { options: [{ text: "No special performance requirements", score: 0 }, { text: "Standard performance expectations", score: 10 }, { text: "High performance requirements", score: 30 }, { text: "Critical performance with complex optimization", score: 60 }] },
-  { options: [{ text: "Standard security practices", score: 0 }, { text: "Additional security validation required", score: 15 }, { text: "Compliance requirements (GDPR, SOX, etc.)", score: 35 }, { text: "High-security features or audit requirements", score: 70 }] },
-  { options: [{ text: "Standard deployment process", score: 0 }, { text: "Requires configuration changes", score: 10 }, { text: "Phased rollout or feature flags needed", score: 25 }, { text: "Complex deployment with multiple environments", score: 45 }] }
+  {
+    id: "external_integration",
+    text: "Do we have to integrate or adapt solution of an external partner? (could be on YS side or in other teams)",
+    options: [
+      { text: "No", score: 0 },
+      { text: "Yes, standard API, already used by lot of other clients", score: 100 },
+      { text: "Yes, but partner creates specifications for us", score: 250 },
+      { text: "No, but we have to enhance their system drastically", score: 75 }
+    ]
+  },
+  {
+    id: "app_touch",
+    text: "Do we have to touch all the part of the app (MPSA)?",
+    options: [
+      { text: "Yes", score: 100 },
+      { text: "No, but 2 YS squads impacted", score: 75 },
+      { text: "No only 1 squad", score: 30 }
+    ]
+  },
+  {
+    id: "new_business",
+    text: "New business for Company 1",
+    options: [
+      { text: "No", score: 0 },
+      { text: "Yes, but already exists at Company 2", score: 50 },
+      { text: "Yes for 1 & 2, but not complex", score: 100 },
+      { text: "Yes for 1 & 2, and complex", score: 150 }
+    ]
+  },
+  {
+    id: "future_scope",
+    text: "Future scope is clear?",
+    options: [
+      { text: "Yes, clear and probability of change is very low", score: 50 },
+      { text: "Yes, but high probability of change is high", score: 75 },
+      { text: "No", score: 100 }
+    ]
+  },
+  {
+    id: "legal_compliance",
+    text: "Legal or compliance requirements?",
+    options: [
+      { text: "No", score: 0 },
+      { text: "Yes, but simple", score: 75 },
+      { text: "Yes, complex", score: 100 }
+    ]
+  },
+  {
+    id: "impact_scope",
+    text: "Impact scope assessment",
+    options: [
+      { text: "Small", score: 30 },
+      { text: "Medium", score: 50 },
+      { text: "Large", score: 100 }
+    ]
+  },
+  {
+    id: "technical_integration",
+    text: "Technical integration complexity",
+    options: [
+      { text: "Simple API integration (well-documented)", score: 10 },
+      { text: "Simple table updates or new fields", score: 15 },
+      { text: "New components using design system", score: 25 },
+      { text: "Custom components or complex UI", score: 40 }
+    ]
+  },
+  {
+    id: "business_logic",
+    text: "Business logic complexity",
+    options: [
+      { text: "Simple CRUD operations", score: 5 },
+      { text: "Moderate logic with validations", score: 20 },
+      { text: "Complex calculations or workflows", score: 45 },
+      { text: "Advanced algorithms or processing", score: 80 }
+    ]
+  },
+  {
+    id: "testing_requirements",
+    text: "Testing requirements",
+    options: [
+      { text: "Basic manual testing", score: 5 },
+      { text: "Unit tests for key functions", score: 15 },
+      { text: "Integration and automated testing", score: 30 },
+      { text: "Comprehensive testing including load/security", score: 50 }
+    ]
+  },
+  {
+    id: "dependencies",
+    text: "Dependencies and blockers",
+    options: [
+      { text: "No dependencies", score: 0 },
+      { text: "Depends on completed features", score: 10 },
+      { text: "Depends on work in progress", score: 30 },
+      { text: "Blocked by multiple incomplete dependencies", score: 60 }
+    ]
+  },
+  {
+    id: "requirements_clarity",
+    text: "Requirements clarity",
+    options: [
+      { text: "Clear requirements with detailed specs", score: 0 },
+      { text: "Good requirements, some clarification needed", score: 10 },
+      { text: "Basic requirements, significant research needed", score: 25 },
+      { text: "Vague requirements, extensive discovery required", score: 50 }
+    ]
+  },
+  {
+    id: "performance_requirements",
+    text: "Performance requirements",
+    options: [
+      { text: "No special performance requirements", score: 0 },
+      { text: "Standard performance expectations", score: 10 },
+      { text: "High performance requirements", score: 30 },
+      { text: "Critical performance with complex optimization", score: 60 }
+    ]
+  },
+  {
+    id: "security_requirements",
+    text: "Security requirements",
+    options: [
+      { text: "Standard security practices", score: 0 },
+      { text: "Additional security validation required", score: 15 },
+      { text: "Compliance requirements (GDPR, SOX, etc.)", score: 35 },
+      { text: "High-security features or audit requirements", score: 70 }
+    ]
+  },
+  {
+    id: "deployment_complexity",
+    text: "Deployment complexity",
+    options: [
+      { text: "Standard deployment process", score: 0 },
+      { text: "Requires configuration changes", score: 10 },
+      { text: "Phased rollout or feature flags needed", score: 25 },
+      { text: "Complex deployment with multiple environments", score: 45 }
+    ]
+  }
 ];
 
 function initializeDB() {
@@ -33,13 +159,26 @@ function initializeDB() {
 
 function calculateScoreFromAnswers(answers) {
   let totalScore = 0;
+  console.log('Calculating score for answers:', answers);
+  console.log('Questions count:', ESTIMATION_QUESTIONS.length);
+  
   ESTIMATION_QUESTIONS.forEach((question, index) => {
     const selectedAnswer = answers[index];
+    console.log(`Question ${index}: "${selectedAnswer}"`);
+    
     if (selectedAnswer) {
       const option = question.options.find(opt => opt.text === selectedAnswer);
-      if (option) totalScore += option.score;
+      if (option) {
+        console.log(`Found option with score: ${option.score}`);
+        totalScore += option.score;
+      } else {
+        console.log(`No matching option found for: "${selectedAnswer}"`);
+        console.log('Available options:', question.options.map(opt => opt.text));
+      }
     }
   });
+  
+  console.log('Total calculated score:', totalScore);
   return totalScore;
 }
 
