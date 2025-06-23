@@ -1,6 +1,8 @@
-# Product Backlog Estimator
+# Estimr - Product Backlog Estimator
 
 A comprehensive web application for prioritizing development requests using an intelligent scoring algorithm.
+
+**Live Application**: https://estimr.ovh
 
 ## Features
 
