@@ -30,7 +30,7 @@
           "value": "project-backlog-estimator-(?<team>.*).vercel.app"
         }
       ],
-      "destination": "https://project-backlog-estimator.estimr.ovh/$1",
+      "destination": "https://product-backlog-estimator.estimr.ovh/$1",
       "permanent": true
     }
   ],

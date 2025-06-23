@@ -2,7 +2,7 @@
 
 ## Current Configuration
 
-Your application is now configured for the subdomain: **project-backlog-estimator.estimr.ovh**
+Your application is now configured for the subdomain: **product-backlog-estimator.estimr.ovh**
 
 This setup ensures users access your app via the custom subdomain while hiding the Vercel URL.
 
