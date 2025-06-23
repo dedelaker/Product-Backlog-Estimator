@@ -74,11 +74,13 @@ export default function Home() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Product Backlog Estimator</h1>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 gap-3 sm:gap-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+              Product<br className="sm:hidden" /> Backlog Estimator
+            </h1>
             <Button 
               onClick={() => setIsAddModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add New Request
@@ -87,18 +89,18 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Scoring Reference */}
         <ScoringReference />
 
         {/* Estimated Requests */}
         <div>
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
             <h2 className="text-xl font-semibold text-gray-900">Estimated Requests</h2>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
               {/* Filter Dropdown */}
               <Select value={filterValue} onValueChange={setFilterValue}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -114,7 +116,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 onClick={handleSort}
-                className="flex items-center gap-2"
+                className="flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <ArrowUpDown className="w-4 h-4" />
                 Sort by Score
