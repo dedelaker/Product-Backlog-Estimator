@@ -2,7 +2,7 @@
 
 A comprehensive web application for prioritizing development requests using an intelligent scoring algorithm.
 
-**Live Application**: https://estimr.ovh
+**Live Application**: https://project-backlog-estimator.estimr.ovh
 
 ## Features
 

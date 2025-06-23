@@ -21,7 +21,19 @@
       ]
     }
   ],
-
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "project-backlog-estimator-(?<team>.*).vercel.app"
+        }
+      ],
+      "destination": "https://project-backlog-estimator.estimr.ovh/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",

@@ -2,36 +2,41 @@
 
 ## Current Configuration
 
-Your application is now configured for the domain: **estimr.ovh**
+Your application is now configured for the subdomain: **project-backlog-estimator.estimr.ovh**
+
+This setup ensures users access your app via the custom subdomain while hiding the Vercel URL.
 
 ## Vercel Custom Domain Setup
 
 1. **In Vercel Dashboard**:
    - Go to your project settings
    - Navigate to "Domains" section
-   - Add custom domain: `estimr.ovh`
-   - Add www variant: `www.estimr.ovh` (optional)
+   - Add custom domain: `project-backlog-estimator.estimr.ovh`
+   - Vercel will automatically handle SSL and redirects
 
 2. **DNS Configuration** (at your OVH control panel):
    ```
-   Type: A
-   Name: @
-   Value: 76.76.19.61 (Vercel IP)
-   TTL: 300
-
-   Type: CNAME  
-   Name: www
+   Type: CNAME
+   Name: project-backlog-estimator
    Value: cname.vercel-dns.com
+   TTL: 300
+   
+   Type: A (if CNAME doesn't work)
+   Name: project-backlog-estimator
+   Value: 76.76.19.61 (Vercel IP)
    TTL: 300
    ```
 
-3. **SSL Certificate**:
-   - Vercel automatically provisions SSL certificates
-   - Certificate will be ready within 24 hours after DNS propagation
+3. **URL Behavior**:
+   - Users access: `https://project-backlog-estimator.estimr.ovh`
+   - Vercel URL is hidden from users
+   - Automatic redirects from Vercel URLs to custom domain
+   - SSL automatically provisioned by Vercel
 
 ## Application Features
 
-- **Professional Domain**: estimr.ovh
+- **Custom Subdomain**: project-backlog-estimator.estimr.ovh
+- **URL Masking**: Vercel URLs automatically redirect to custom domain
 - **SEO Optimized**: Complete meta tags and Open Graph support
 - **Privacy Protected**: Comprehensive crawler blocking
 - **Mobile Responsive**: Optimized for all devices
@@ -39,12 +44,18 @@ Your application is now configured for the domain: **estimr.ovh**
 
 ## Post-Deployment Checklist
 
-- [ ] DNS records configured at OVH
-- [ ] Domain added in Vercel dashboard
+- [ ] DNS CNAME record configured at OVH
+- [ ] Custom domain added in Vercel dashboard
 - [ ] SSL certificate active (automatic)
-- [ ] Application accessible at https://estimr.ovh
+- [ ] Application accessible at https://project-backlog-estimator.estimr.ovh
+- [ ] Vercel URL redirects working properly
 - [ ] All crawling protection verified
 - [ ] Database connection functioning
+
+## URL Structure
+
+**Primary Access URL**: https://project-backlog-estimator.estimr.ovh
+**Hidden Vercel URL**: https://project-backlog-estimator-*.vercel.app (redirects automatically)
 
 ## Technical Stack
 
