@@ -3,24 +3,24 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import { eq } from 'drizzle-orm';
 import { pgTable, serial, text, timestamp, integer } from 'drizzle-orm/pg-core';
 
-// Rate limiting storage for serverless functions
-const rateLimitStore = new Map();
+// Write operations rate limiting for serverless functions
+const writeRateLimitStore = new Map();
 
-// Rate limiting function for serverless environment
-function checkRateLimit(ip, maxRequests = 20, windowMs = 24 * 60 * 60 * 1000) {
+// Write operations rate limiting - 30 per day
+function checkWriteRateLimit(ip, maxRequests = 30, windowMs = 24 * 60 * 60 * 1000) {
   const now = Date.now();
-  const key = ip;
+  const key = `write_${ip}`;
   
-  if (!rateLimitStore.has(key)) {
-    rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+  if (!writeRateLimitStore.has(key)) {
+    writeRateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
     return { allowed: true, remaining: maxRequests - 1 };
   }
   
-  const record = rateLimitStore.get(key);
+  const record = writeRateLimitStore.get(key);
   
   // Reset if window has expired
   if (now > record.resetTime) {
-    rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
+    writeRateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
     return { allowed: true, remaining: maxRequests - 1 };
   }
   
@@ -36,11 +36,6 @@ function checkRateLimit(ip, maxRequests = 20, windowMs = 24 * 60 * 60 * 1000) {
   // Increment counter
   record.count++;
   return { allowed: true, remaining: maxRequests - record.count };
-}
-
-// Write operations rate limiting (stricter)
-function checkWriteRateLimit(ip) {
-  return checkRateLimit(`write_${ip}`, 10, 24 * 60 * 60 * 1000);
 }
 
 const requests = pgTable("backlog_requests", {
@@ -201,25 +196,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Get client IP address
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
-    
-    // Apply rate limiting
-    const rateLimitResult = checkRateLimit(ip);
-    
-    // Set rate limit headers
-    res.setHeader('X-RateLimit-Limit', '20');
-    res.setHeader('X-RateLimit-Remaining', rateLimitResult.remaining);
-    res.setHeader('X-RateLimit-Reset', rateLimitResult.resetTime);
-    
-    if (!rateLimitResult.allowed) {
-      return res.status(429).json({
-        error: 'Rate limit exceeded',
-        message: 'Too many requests from this IP address. Maximum 20 requests allowed per day.',
-        resetTime: new Date(rateLimitResult.resetTime).toISOString()
-      });
-    }
-
     // Check if DATABASE_URL exists
     if (!process.env.DATABASE_URL) {
       return res.status(500).json({ error: 'DATABASE_URL not configured' });
@@ -233,13 +209,19 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      // Apply stricter rate limiting for write operations
+      // Get client IP address and apply write rate limiting
+      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
       const writeRateLimit = checkWriteRateLimit(ip);
+      
+      // Set rate limit headers
+      res.setHeader('X-RateLimit-Limit', '30');
+      res.setHeader('X-RateLimit-Remaining', writeRateLimit.remaining);
+      res.setHeader('X-RateLimit-Reset', writeRateLimit.resetTime);
       
       if (!writeRateLimit.allowed) {
         return res.status(429).json({
           error: 'Write operation rate limit exceeded',
-          message: 'Too many write operations from this IP address. Maximum 10 create/update/delete operations allowed per day.',
+          message: 'Too many write operations from this IP address. Maximum 30 create/update/delete operations allowed per day.',
           resetTime: new Date(writeRateLimit.resetTime).toISOString()
         });
       }
