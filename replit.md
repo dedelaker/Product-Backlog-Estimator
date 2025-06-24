@@ -94,12 +94,22 @@ backlog_requests: id, title, answers[], score, complexity, estimated_time, creat
 - **Connection String**: Stored as environment variable
 
 ### Security Features
+- **Rate Limiting**: Multi-tier protection against API abuse
+  - Daily request limits: 20 requests per IP address
+  - Write operation limits: 10 create/update/delete per IP address  
+  - Burst protection: 5 requests per minute maximum
+  - Progressive slowdown after threshold
 - **Privacy Protection**: Comprehensive crawler blocking via robots meta tags
 - **Content Security**: X-Frame-Options, X-Content-Type-Options headers
 - **SSL**: Automatic HTTPS with Vercel
-- **Database**: SSL-required connections to Neon
+- **Database**: SSL-required connections to Neon with rate limiting protection
 
 ## Changelog
+- June 24, 2025: Implemented comprehensive rate limiting security
+  - Added multi-tier API protection (20 requests/day, 10 writes/day, 5 burst/minute)
+  - Express middleware for development server
+  - Serverless function protection for production
+  - IP-based tracking with proper proxy support
 - June 23, 2025. Initial setup
 
 ## User Preferences

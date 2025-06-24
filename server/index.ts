@@ -1,8 +1,18 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { dailyRateLimit, writeOperationsLimit, speedLimiter, burstProtection } from "./middleware/rateLimiter";
 
 const app = express();
+
+// Trust proxy for proper IP detection in production
+app.set('trust proxy', 1);
+
+// Security middleware - apply rate limiting before other middleware
+app.use(burstProtection); // Prevent rapid fire requests
+app.use(speedLimiter); // Slow down after threshold
+app.use(dailyRateLimit); // Daily request limit
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

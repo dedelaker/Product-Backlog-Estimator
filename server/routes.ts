@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertRequestSchema } from "@shared/schema";
 import { z } from "zod";
+import { writeOperationsLimit } from "./middleware/rateLimiter";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all requests
@@ -37,7 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create a new request
-  app.post("/api/requests", async (req, res) => {
+  app.post("/api/requests", writeOperationsLimit, async (req, res) => {
     try {
       const validatedData = insertRequestSchema.parse(req.body);
       const request = await storage.createRequest(validatedData);
@@ -55,7 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update a request
-  app.put("/api/requests/:id", async (req, res) => {
+  app.put("/api/requests/:id", writeOperationsLimit, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -81,7 +82,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete a request
-  app.delete("/api/requests/:id", async (req, res) => {
+  app.delete("/api/requests/:id", writeOperationsLimit, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -107,7 +108,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/hello", async (req, res) => {
+  app.post("/api/hello", writeOperationsLimit, async (req, res) => {
     try {
       const validatedData = insertRequestSchema.parse(req.body);
       const request = await storage.createRequest(validatedData);
