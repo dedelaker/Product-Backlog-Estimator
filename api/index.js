@@ -12,16 +12,18 @@ function checkWriteRateLimit(maxRequests = 1000, windowMs = 24 * 60 * 60 * 1000)
   const key = 'global_writes'; // Global key instead of IP-based
   
   if (!writeRateLimitStore.has(key)) {
-    writeRateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
-    return { allowed: true, remaining: maxRequests - 1 };
+    const resetTime = now + windowMs;
+    writeRateLimitStore.set(key, { count: 1, resetTime });
+    return { allowed: true, remaining: maxRequests - 1, resetTime };
   }
   
   const record = writeRateLimitStore.get(key);
   
   // Reset if window has expired
   if (now > record.resetTime) {
-    writeRateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
-    return { allowed: true, remaining: maxRequests - 1 };
+    const resetTime = now + windowMs;
+    writeRateLimitStore.set(key, { count: 1, resetTime });
+    return { allowed: true, remaining: maxRequests - 1, resetTime };
   }
   
   // Check if limit exceeded
@@ -35,7 +37,7 @@ function checkWriteRateLimit(maxRequests = 1000, windowMs = 24 * 60 * 60 * 1000)
   
   // Increment counter
   record.count++;
-  return { allowed: true, remaining: maxRequests - record.count };
+  return { allowed: true, remaining: maxRequests - record.count, resetTime: record.resetTime };
 }
 
 const requests = pgTable("backlog_requests", {
@@ -215,7 +217,9 @@ export default async function handler(req, res) {
       // Set rate limit headers
       res.setHeader('X-RateLimit-Limit', '1000');
       res.setHeader('X-RateLimit-Remaining', writeRateLimit.remaining);
-      res.setHeader('X-RateLimit-Reset', writeRateLimit.resetTime);
+      if (writeRateLimit.resetTime) {
+        res.setHeader('X-RateLimit-Reset', new Date(writeRateLimit.resetTime).toISOString());
+      }
       
       if (!writeRateLimit.allowed) {
         return res.status(429).json({
