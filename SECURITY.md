@@ -7,7 +7,7 @@ The application implements focused rate limiting to protect against database abu
 ### Security Measures
 
 #### Write Operations Limit
-- **Write Operations Only**: Maximum 30 create/update/delete operations per day per IP address
+- **Write Operations Only**: Maximum 1000 create/update/delete operations per day globally
 - **Read Operations**: Unlimited (GET requests for viewing data)
 - **24-Hour Reset**: Counter resets every 24 hours from first write operation
 
@@ -16,8 +16,9 @@ The application implements focused rate limiting to protect against database abu
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Write Operations Only                   │
-│                  30 requests per day                       │
+│                 1000 requests per day                      │
 │            POST | PUT | DELETE | PATCH                     │
+│                   (Global Limit)                           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -36,13 +37,13 @@ app.get("/api/requests", handler); // No rate limiting
 
 #### Serverless Function Protection
 ```javascript
-// Write operations rate limiting - 30 per day
-function checkWriteRateLimit(ip, maxRequests = 30, windowMs = 24 * 60 * 60 * 1000)
+// Write operations rate limiting - 1000 per day (global)
+function checkWriteRateLimit(maxRequests = 1000, windowMs = 24 * 60 * 60 * 1000)
 
 // Applied only to POST requests in serverless functions
 if (req.method === 'POST') {
-  const writeRateLimit = checkWriteRateLimit(ip);
-  // Check limit before database operations
+  const writeRateLimit = checkWriteRateLimit();
+  // Check global limit before database operations
 }
 ```
 
@@ -52,7 +53,7 @@ if (req.method === 'POST') {
 ```json
 {
   "error": "Write operation rate limit exceeded", 
-  "message": "Too many write operations from this IP address. Maximum 30 create/update/delete operations allowed per day.",
+  "message": "Too many write operations. Maximum 1000 create/update/delete operations allowed per day.",
   "resetTime": "2025-06-24T18:30:00.000Z"
 }
 ```
@@ -60,16 +61,16 @@ if (req.method === 'POST') {
 ### HTTP Headers
 
 Rate limit information is provided in response headers for write operations:
-- `X-RateLimit-Limit`: 30 (Maximum write operations allowed)
+- `X-RateLimit-Limit`: 1000 (Maximum write operations allowed)
 - `X-RateLimit-Remaining`: Remaining write operations in current window
 - `X-RateLimit-Reset`: Timestamp when limit resets
 
-### IP Detection
+### Global Rate Limiting
 
-The system properly identifies client IP addresses in various deployment scenarios:
-- Direct connections: `req.socket.remoteAddress`
-- Proxy/Load Balancer: `x-forwarded-for` header
-- Express trust proxy configuration enabled
+The system uses a global counter for all write operations regardless of IP address:
+- All users share the same daily limit of 1000 write operations
+- No IP-based restrictions or tracking
+- Single global counter resets every 24 hours
 
 ### Database Protection
 

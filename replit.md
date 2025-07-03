@@ -95,7 +95,7 @@ backlog_requests: id, title, answers[], score, complexity, estimated_time, creat
 
 ### Security Features
 - **Rate Limiting**: Focused protection for write operations
-  - Write operation limits: 30 create/update/delete per IP address per day
+  - Write operation limits: 1000 create/update/delete per day (global)
   - Read operations: Unlimited (GET requests)
   - 24-hour reset window from first write operation
 - **Privacy Protection**: Comprehensive crawler blocking via robots meta tags
@@ -104,6 +104,10 @@ backlog_requests: id, title, answers[], score, complexity, estimated_time, creat
 - **Database**: SSL-required connections to Neon with write operation protection
 
 ## Changelog
+- June 24, 2025: Increased rate limiting and removed IP restrictions
+  - Write operations increased to 1000 per day (global limit)
+  - Removed IP-based restrictions for simplified access
+  - Maintained 24-hour reset window for write operations
 - June 24, 2025: Simplified rate limiting to focus on write operations only
   - Write operations limited to 30 per day per IP address
   - Read operations unlimited for better user experience

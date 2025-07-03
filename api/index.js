@@ -6,10 +6,10 @@ import { pgTable, serial, text, timestamp, integer } from 'drizzle-orm/pg-core';
 // Write operations rate limiting for serverless functions
 const writeRateLimitStore = new Map();
 
-// Write operations rate limiting - 30 per day
-function checkWriteRateLimit(ip, maxRequests = 30, windowMs = 24 * 60 * 60 * 1000) {
+// Write operations rate limiting - 1000 per day (global)
+function checkWriteRateLimit(maxRequests = 1000, windowMs = 24 * 60 * 60 * 1000) {
   const now = Date.now();
-  const key = `write_${ip}`;
+  const key = 'global_writes'; // Global key instead of IP-based
   
   if (!writeRateLimitStore.has(key)) {
     writeRateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
@@ -209,19 +209,18 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'POST') {
-      // Get client IP address and apply write rate limiting
-      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || 'unknown';
-      const writeRateLimit = checkWriteRateLimit(ip);
+      // Apply global write rate limiting
+      const writeRateLimit = checkWriteRateLimit();
       
       // Set rate limit headers
-      res.setHeader('X-RateLimit-Limit', '30');
+      res.setHeader('X-RateLimit-Limit', '1000');
       res.setHeader('X-RateLimit-Remaining', writeRateLimit.remaining);
       res.setHeader('X-RateLimit-Reset', writeRateLimit.resetTime);
       
       if (!writeRateLimit.allowed) {
         return res.status(429).json({
           error: 'Write operation rate limit exceeded',
-          message: 'Too many write operations from this IP address. Maximum 30 create/update/delete operations allowed per day.',
+          message: 'Too many write operations. Maximum 1000 create/update/delete operations allowed per day.',
           resetTime: new Date(writeRateLimit.resetTime).toISOString()
         });
       }

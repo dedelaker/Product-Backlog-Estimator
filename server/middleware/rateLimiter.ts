@@ -1,15 +1,16 @@
 import rateLimit from 'express-rate-limit';
 import { Request, Response } from 'express';
 
-// Write operations rate limiter - 30 per day
+// Write operations rate limiter - 1000 per day (global)
 export const writeOperationsLimit = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 30, // Maximum 30 write operations per day per IP
+  max: 1000, // Maximum 1000 write operations per day globally
   message: {
-    error: 'Too many write operations from this IP address. Maximum 30 create/update/delete operations allowed per day.',
+    error: 'Too many write operations. Maximum 1000 create/update/delete operations allowed per day.',
     resetTime: '24 hours',
-    maxRequests: 30
+    maxRequests: 1000
   },
+  keyGenerator: () => 'global', // Use global key instead of IP-based
   skip: (req: Request) => {
     // Only apply to write operations
     return !['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method);
@@ -19,9 +20,9 @@ export const writeOperationsLimit = rateLimit({
   handler: (req: Request, res: Response) => {
     res.status(429).json({
       error: 'Write operation rate limit exceeded',
-      message: 'Too many write operations from this IP address. Maximum 30 create/update/delete operations allowed per day.',
+      message: 'Too many write operations. Maximum 1000 create/update/delete operations allowed per day.',
       resetTime: '24 hours',
-      maxRequests: 30
+      maxRequests: 1000
     });
   }
 });
